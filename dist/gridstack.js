@@ -80,6 +80,7 @@
       var style = document.createElement('style');
       style.setAttribute('type', 'text/css');
       style.setAttribute('data-gs-style-id', id);
+      style.setAttribute('nonce', nonce);
       if (style.styleSheet) {
         style.styleSheet.cssText = '';
       } else {
