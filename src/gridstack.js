@@ -76,7 +76,7 @@
         return Utils.sortBy(nodes, function(n) { return (n.x + n.y * column); });
     },
 
-    createStylesheet: function(id, parent) {
+    createStylesheet: function(id, parent,nonce) {
       var style = document.createElement('style');
       style.setAttribute('type', 'text/css');
       style.setAttribute('data-gs-style-id', id);
@@ -1093,7 +1093,7 @@
     }
     this._stylesId = 'gridstack-style-' + (Math.random() * 100000).toFixed();
     // insert style to parent (instead of 'head') to support WebComponent
-    this._styles = Utils.createStylesheet(this._stylesId, this.el.parentNode);
+    this._styles = Utils.createStylesheet(this._stylesId, this.el.parentNode, this.opts.nonce);
     if (this._styles !== null) {
       this._styles._max = 0;
     }
