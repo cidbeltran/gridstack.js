@@ -85,6 +85,7 @@
       } else {
         style.appendChild(document.createTextNode(''));
       }
+      if (nonce) { style.setAttribute('nonce', nonce); }
       if (!parent) { parent = document.getElementsByTagName('head')[0]; } // default to head
       parent.insertBefore(style, parent.firstChild);
       return style.sheet;
