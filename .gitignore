@@ -3,5 +3,6 @@
 *.zip
 .npmrc
 coverage
-dist
+#including dist so it can be published for now
+#dist
 node_modules
