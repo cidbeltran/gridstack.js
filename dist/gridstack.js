@@ -1,5 +1,5 @@
 /**
- * gridstack.js 1.1.1-dev
+ * gridstack.js 1.1.2-dev
  * https://gridstackjs.com/
  * (c) 2014-2020 Alain Dumesny, Dylan Weiss, Pavel Reznikov
  * gridstack.js may be freely distributed under the MIT license.
@@ -1427,8 +1427,8 @@
 
   /** call to write any default attributes back to element */
   GridStack.prototype._writeAttr = function(el, node) {
+    if (!node) { return; }
     el = $(el);
-    node = node || {};
     // Note: passing null removes the attr in jquery
     if (node.x !== undefined) { el.attr('data-gs-x', node.x); }
     if (node.y !== undefined) { el.attr('data-gs-y', node.y); }
@@ -1446,7 +1446,7 @@
     if (node.id !== undefined) { el.attr('data-gs-id', node.id); }
   };
 
-  /** call to write any default attributes back to element */
+  /** call to read any default attributes back to element */
   GridStack.prototype._readAttr = function(el, node) {
     el = $(el);
     node = node || {};
@@ -1490,6 +1490,9 @@
 
     el = $(el);
     if (opt) { // see knockout above
+      // make sure we load any DOM attributes that are not specified in passed in options (which override)
+      domAttr = this._readAttr(el);
+      Utils.defaults(opt, domAttr);
       this.engine._prepareNode(opt);
     }
     this._writeAttr(el, opt);
@@ -1519,6 +1522,7 @@
     if (!node) {
       node = this.engine.getNodeDataByDOMEl(el.get(0));
     }
+    if (!node || node.el.parentElement !== this.el) return; // not our child!
     // remove our DOM data (circular link) and drag&drop permanently
     el.removeData('_gridstack_node');
     this.dd.draggable(el, 'destroy').resizable(el, 'destroy');
@@ -2107,7 +2111,7 @@
     var el = $(elOrString).get(0);
     if (!el) return;
     if (!el.gridstack) {
-      el.gridstack = new GridStack(el, opts);
+      el.gridstack = new GridStack(el, Utils.clone(opts));
     }
     return el.gridstack
   };
