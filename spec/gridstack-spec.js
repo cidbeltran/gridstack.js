@@ -899,14 +899,14 @@ describe('gridstack', function() {
 
   });
 
-  describe('addWidget() with bad string value widget options', function() {
+  describe('addWidget()', function() {
     beforeEach(function() {
       document.body.insertAdjacentHTML('afterbegin', gridstackHTML);
     });
     afterEach(function() {
       document.body.removeChild(document.getElementById('gs-cont'));
     });
-    it('should use default', function() {
+    it('bad string options should use default', function() {
       var grid = GridStack.init();
       var widget = grid.addWidget(widgetHTML, {x: 'foo', y: null, width: 'bar', height: ''});
       var $widget = $(widget);
@@ -915,16 +915,7 @@ describe('gridstack', function() {
       expect(parseInt($widget.attr('data-gs-width'), 10)).toBe(1);
       expect(parseInt($widget.attr('data-gs-height'), 10)).toBe(1);
     });
-  });
-
-  describe('addWidget with null options, ', function() {
-    beforeEach(function() {
-      document.body.insertAdjacentHTML('afterbegin', gridstackHTML);
-    });
-    afterEach(function() {
-      document.body.removeChild(document.getElementById('gs-cont'));
-    });
-    it('should clear x position', function() {
+    it('null options should clear x position', function() {
       var grid = GridStack.init({float: true});
       var widgetHTML = '<div class="grid-stack-item" data-gs-x="9"><div class="grid-stack-item-content"></div></div>';
       var widget = grid.addWidget(widgetHTML, null, null, undefined);
@@ -932,6 +923,19 @@ describe('gridstack', function() {
       expect(parseInt($widget.attr('data-gs-x'), 10)).toBe(8);
       expect(parseInt($widget.attr('data-gs-y'), 10)).toBe(0);
     });
+    it('width attr should be retained', function() { // #1276
+      var grid = GridStack.init({float: true});
+      var widgetHTML = '<div class="grid-stack-item" data-gs-width="3" data-gs-max-width="4" data-gs-id="foo"><div class="grid-stack-item-content"></div></div>';
+      var widget = grid.addWidget(widgetHTML, 1, 5);
+      var $widget = $(widget);
+      expect(parseInt($widget.attr('data-gs-x'), 10)).toBe(1);
+      expect(parseInt($widget.attr('data-gs-y'), 10)).toBe(5);
+      expect(parseInt($widget.attr('data-gs-width'), 10)).toBe(3);
+      expect(parseInt($widget.attr('data-gs-max-width'), 10)).toBe(4);
+      expect(parseInt($widget.attr('data-gs-height'), 10)).toBe(1);
+      expect($widget.attr('data-gs-id')).toBe('foo');
+    });
+
   });
 
   describe('method float()', function() {
@@ -1326,6 +1330,42 @@ describe('gridstack', function() {
         expect(parseInt(item.attr('data-gs-width'))).toBe(pos[i].w);
         expect(parseInt(item.attr('data-gs-height'))).toBe(pos[i].h);
       }
+    });
+  });
+
+  describe('two grids', function() {
+    beforeEach(function() {
+      document.body.insertAdjacentHTML('afterbegin', gridstackHTML);
+      document.body.insertAdjacentHTML('afterbegin', gridstackHTML);
+    });
+    afterEach(function() {
+      document.body.removeChild(document.getElementById('gs-cont'));
+    });
+    it('should not remove incorrect child', function() {
+      let grids = GridStack.initAll();
+      expect(grids.length).toBe(2);
+      expect(grids[0].engine.nodes.length).toBe(2);
+      expect(grids[1].engine.nodes.length).toBe(2);
+      // should do nothing
+      grids[0].removeWidget( grids[1].engine.nodes[0].el );
+      expect(grids[0].engine.nodes.length).toBe(2);
+      expect(grids[0].el.children.length).toBe(2);
+      expect(grids[1].engine.nodes.length).toBe(2);
+      expect(grids[1].el.children.length).toBe(2);
+      // should empty with no errors
+      grids[1].removeAll();
+      expect(grids[0].engine.nodes.length).toBe(2);
+      expect(grids[0].el.children.length).toBe(2);
+      expect(grids[1].engine.nodes.length).toBe(0);
+      expect(grids[1].el.children.length).toBe(0);
+    });
+    it('should remove 1 child', function() {
+      let grids = GridStack.initAll();
+      grids[1].removeWidget( grids[1].engine.nodes[0].el );
+      expect(grids[0].engine.nodes.length).toBe(2);
+      expect(grids[0].el.children.length).toBe(2);
+      expect(grids[1].engine.nodes.length).toBe(1);
+      expect(grids[1].el.children.length).toBe(1);
     });
   });
 
