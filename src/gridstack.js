@@ -1014,7 +1014,7 @@
           self.placeholder.detach();
 
           var node = $(ui.draggable).data('_gridstack_node');
-          
+
           if (node !== undefined) {
             node.isOutOfGrid = false;
             node._grid = self;
