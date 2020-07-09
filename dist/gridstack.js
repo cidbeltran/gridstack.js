@@ -1014,8 +1014,13 @@
           self.placeholder.detach();
 
           var node = $(ui.draggable).data('_gridstack_node');
+          if (node == undefined) {
+            return;
+          }
+
           node.isOutOfGrid = false;
           node._grid = self;
+
           var el = $(ui.draggable).clone(false);
           el.data('_gridstack_node', node);
           var originalNode = $(ui.draggable).data('_gridstack_node_orig');
@@ -1261,7 +1266,9 @@
             return;
           }
         } else {
-          self._clearRemovingTimeout(el);
+          if(el.data('_gridstack_node')) {
+            self._clearRemovingTimeout(el);
+          }
 
           if (node._temporaryRemoved) {
             self.engine.addNode(node);
