@@ -1014,11 +1014,12 @@
           self.placeholder.detach();
 
           var node = $(ui.draggable).data('_gridstack_node');
-
-          if (node !== undefined) {
-            node.isOutOfGrid = false;
-            node._grid = self;
+          if (node == undefined) {
+            return;
           }
+
+          node.isOutOfGrid = false;
+          node._grid = self;
 
           var el = $(ui.draggable).clone(false);
           el.data('_gridstack_node', node);
